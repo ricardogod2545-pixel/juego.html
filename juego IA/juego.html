@@ -1,0 +1,807 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="IA CHALLENGE: demuestra tus conocimientos de inteligencia artificial mediante desafíos interactivos.">
+    <meta name="theme-color" content="#080817">
+
+    <title>IA CHALLENGE | Zona de juego</title>
+
+    <!-- TIPOGRAFÍAS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- ESTILOS PRINCIPALES -->
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="juego.css">
+    <link rel="stylesheet" href="recompensas.css">
+    <link rel="stylesheet" href="poderes.css">
+
+    <style>
+        [hidden] {
+            display: none !important;
+        }
+
+        button:focus-visible,
+        a:focus-visible,
+        summary:focus-visible {
+            outline: 2px solid #a78bfa;
+            outline-offset: 4px;
+        }
+
+        /* INSTRUCCIONES */
+
+        .game-instructions {
+            width: 100%;
+            max-width: 620px;
+            margin: 25px 0;
+        }
+
+        .game-instructions details {
+            border: 1px solid rgba(167, 139, 250, 0.25);
+            border-radius: 14px;
+            background: rgba(20, 20, 48, 0.72);
+            overflow: hidden;
+            transition: border-color .3s ease, background .3s ease;
+        }
+
+        .game-instructions details[open] {
+            border-color: rgba(167, 139, 250, .7);
+            background: rgba(28, 25, 60, .9);
+        }
+
+        .game-instructions summary {
+            padding: 16px 20px;
+            color: #c4b5fd;
+            font-weight: 700;
+            cursor: pointer;
+            list-style: none;
+        }
+
+        .game-instructions summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .game-instructions summary::after {
+            content: "+";
+            float: right;
+            font-size: 20px;
+        }
+
+        .game-instructions details[open] summary::after {
+            content: "−";
+        }
+
+        .instructions-content {
+            padding: 5px 20px 20px;
+            color: #cbd5e1;
+            line-height: 1.7;
+            animation: instructionsAppear .3s ease;
+        }
+
+        .instructions-content h3 {
+            color: #a78bfa;
+            margin: 16px 0 6px;
+            font-family: "Space Grotesk", sans-serif;
+        }
+
+        .instructions-content ul {
+            padding-left: 20px;
+        }
+
+        .instructions-content li {
+            margin-bottom: 7px;
+        }
+
+        /* CRÉDITOS */
+
+        .game-credits {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            margin-top: 25px;
+            color: #94a3b8;
+            font-size: 12px;
+        }
+
+        .game-credits span {
+            letter-spacing: 2px;
+            color: #a78bfa;
+            font-size: 10px;
+            font-weight: 800;
+        }
+
+        .game-credits strong {
+            color: #e2e8f0;
+            font-size: 14px;
+        }
+
+        /* ANIMACIONES */
+
+        @keyframes instructionsAppear {
+            from {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* RESPONSIVE */
+
+        @media (max-width: 768px) {
+            .game-main {
+                width: 100%;
+                padding-left: 16px;
+                padding-right: 16px;
+            }
+
+            .game-intro {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .game-intro-visual {
+                min-height: 300px;
+                transform: scale(.85);
+                transform-origin: center;
+            }
+
+            .game-intro h1 {
+                font-size: clamp(34px, 9vw, 52px);
+            }
+
+            .tech-emblems {
+                flex-wrap: wrap;
+                gap: 14px;
+            }
+
+            .game-topbar,
+            .challenge-heading {
+                flex-wrap: wrap;
+                gap: 15px;
+            }
+
+            .game-status {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 12px;
+            }
+
+            .final-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .final-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .final-actions button {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .game-intro-visual {
+                min-height: 240px;
+                transform: scale(.72);
+            }
+
+            .game-status {
+                grid-template-columns: 1fr;
+            }
+
+            .game-instructions summary {
+                font-size: 13px;
+            }
+
+            .challenge-container {
+                padding: 18px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .game-page *,
+            .game-page *::before,
+            .game-page *::after {
+                animation-duration: .01ms !important;
+                animation-iteration-count: 1 !important;
+                scroll-behavior: auto !important;
+                transition-duration: .01ms !important;
+            }
+        }
+    </style>
+</head>
+
+<body class="game-page">
+
+    <!-- FONDO ESPACIAL -->
+
+    <div class="ambient ambient-one"></div>
+    <div class="ambient ambient-two"></div>
+    <div class="ambient ambient-three"></div>
+
+    <div class="space-battle" aria-hidden="true">
+        <div class="space-stars"></div>
+        <div class="space-nebula nebula-one"></div>
+        <div class="space-nebula nebula-two"></div>
+
+        <div class="battle-ship ship-one">
+            <span class="ship-wing"></span>
+            <span class="ship-core"></span>
+            <span class="ship-engine"></span>
+            <span class="laser-shot shot-one"></span>
+            <span class="laser-shot shot-two"></span>
+        </div>
+
+        <div class="battle-ship ship-two">
+            <span class="ship-wing"></span>
+            <span class="ship-core"></span>
+            <span class="ship-engine"></span>
+            <span class="laser-shot shot-one"></span>
+            <span class="laser-shot shot-two"></span>
+        </div>
+
+        <div class="battle-ship ship-three">
+            <span class="ship-wing"></span>
+            <span class="ship-core"></span>
+            <span class="ship-engine"></span>
+            <span class="laser-shot shot-one"></span>
+        </div>
+
+        <div class="battle-ship ship-four">
+            <span class="ship-wing"></span>
+            <span class="ship-core"></span>
+            <span class="ship-engine"></span>
+            <span class="laser-shot shot-one"></span>
+        </div>
+
+        <div class="battle-flash flash-one"></div>
+        <div class="battle-flash flash-two"></div>
+    </div>
+
+    <!-- NAVEGACIÓN -->
+
+    <header class="main-navbar">
+        <a href="#game-intro" class="brand-logo" aria-label="IA Challenge">
+            <span class="brand-symbol">
+                <svg viewBox="0 0 50 50" fill="none" aria-hidden="true">
+                    <path d="M25 3L46 15V35L25 47L4 35V15L25 3Z"
+                        stroke="currentColor" stroke-width="2"/>
+                    <path d="M15 33L25 14L35 33M19 25H31"
+                        stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round"/>
+                    <circle cx="25" cy="37" r="2" fill="currentColor"/>
+                </svg>
+            </span>
+
+            <span class="brand-name">
+                IA <strong>CHALLENGE</strong>
+            </span>
+        </a>
+
+        <div class="navbar-status">
+            <span class="status-light"></span>
+            SISTEMA ACTIVO
+        </div>
+    </header>
+
+    <main class="game-main">
+
+        <!-- PORTADA -->
+
+        <section class="game-intro" id="game-intro">
+
+            <div class="game-intro-content">
+
+                <div class="eyebrow">
+                    <span></span>
+                    SISTEMA DE ENTRENAMIENTO IA
+                </div>
+
+                <h1>
+                    ¿Estás listo para
+                    <br>
+                    <span>desafiar tu mente?</span>
+                </h1>
+
+                <p>
+                    Entra en una experiencia interactiva donde tendrás
+                    que resolver desafíos, conectar conceptos y superar
+                    diferentes niveles para demostrar tus conocimientos
+                    sobre inteligencia artificial.
+                </p>
+
+                <div class="tech-emblems">
+
+                    <div class="tech-emblem">
+                        <span class="emblem-icon">⌘</span>
+                        <span>NEURAL<br>NETWORKS</span>
+                    </div>
+
+                    <div class="tech-emblem">
+                        <span class="emblem-icon">◈</span>
+                        <span>MACHINE<br>LEARNING</span>
+                    </div>
+
+                    <div class="tech-emblem">
+                        <span class="emblem-icon">⌬</span>
+                        <span>DATA<br>SYSTEMS</span>
+                    </div>
+
+                    <div class="tech-emblem">
+                        <span class="emblem-icon">✳</span>
+                        <span>GENERATIVE<br>AI</span>
+                    </div>
+
+                </div>
+
+                <div class="game-features">
+                    <div><span>01</span> Trivia inteligente</div>
+                    <div><span>02</span> Memoria conceptual</div>
+                    <div><span>03</span> Casos prácticos y escape IA</div>
+                </div>
+
+                <!-- INSTRUCCIONES -->
+
+                <div class="game-instructions">
+                    <details>
+                        <summary>¿Cómo se juega? Consulta las instrucciones</summary>
+
+                        <div class="instructions-content">
+
+                            <h3>Tu misión</h3>
+                            <p>
+                                Supera los 60 desafíos de inteligencia artificial,
+                                distribuidos en tres niveles de dificultad.
+                            </p>
+
+                            <h3>Reglas principales</h3>
+                            <ul>
+                                <li>Comienzas con 3 vidas.</li>
+                                <li>Una respuesta incorrecta puede hacerte perder una vida.</li>
+                                <li>Resuelve desafíos para acumular puntos y experiencia.</li>
+                                <li>Avanza a través de los niveles de dificultad.</li>
+                                <li>Utiliza tus poderes estratégicamente.</li>
+                            </ul>
+
+                            <h3>Modalidades</h3>
+                            <ul>
+                                <li><strong>Trivia:</strong> responde preguntas sobre inteligencia artificial.</li>
+                                <li><strong>Decisión:</strong> resuelve situaciones y casos prácticos.</li>
+                                <li><strong>Memoria:</strong> relaciona conceptos con sus definiciones.</li>
+                                <li><strong>Escape IA:</strong> descubre las respuestas mediante pistas.</li>
+                            </ul>
+
+                            <h3>Tu progreso</h3>
+                            <p>
+                                Gana puntos, acumula XP, consigue insignias
+                                y aprovecha los poderes para superar los desafíos.
+                            </p>
+
+                        </div>
+                    </details>
+                </div>
+
+                <!-- BOTÓN DE INICIO -->
+
+                <button
+                    class="primary-button"
+                    id="start-game"
+                    type="button"
+                >
+                    INICIAR DESAFÍO
+                    <span>↗</span>
+                </button>
+
+                <p class="game-disclaimer">
+                    60 RETOS
+                    <span>·</span>
+                    3 NIVELES
+                    <span>·</span>
+                    4 MODALIDADES
+                </p>
+
+                <!-- CRÉDITOS -->
+
+                <div class="game-credits">
+                    <span>DESARROLLADO POR</span>
+                    <strong>Equipo IA CHALLENGE</strong>
+                    <small>Proyecto académico de Inteligencia Artificial</small>
+                </div>
+
+            </div>
+
+            <!-- ELEMENTO VISUAL ESPACIAL -->
+
+            <div class="game-intro-visual" aria-hidden="true">
+
+                <div class="visual-orbit orbit-one"></div>
+                <div class="visual-orbit orbit-two"></div>
+                <div class="visual-orbit orbit-three"></div>
+
+                <div class="visual-particle particle-one"></div>
+                <div class="visual-particle particle-two"></div>
+                <div class="visual-particle particle-three"></div>
+
+                <div class="game-center">
+                    <span>IA</span>
+                    <small>CHALLENGE</small>
+                </div>
+
+                <div class="game-floating floating-one">
+                    LEVEL 01
+                </div>
+
+                <div class="game-floating floating-two">
+                    SYSTEM ONLINE
+                </div>
+
+                <div class="game-floating floating-three">
+                    60 MISSIONS
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- INTERFAZ PRINCIPAL DEL JUEGO -->
+
+        <section
+            class="game-interface"
+            id="game-interface"
+            hidden
+        >
+
+            <!-- SISTEMA DE RECOMPENSAS -->
+
+            <section class="rewards-panel" id="rewards-panel">
+
+                <div class="rewards-heading">
+                    <h3>🏆 PROGRESO DEL JUGADOR</h3>
+
+                    <span class="rewards-rank" id="reward-rank">
+                        Cadete IA
+                    </span>
+                </div>
+
+                <div class="rewards-xp-row">
+
+                    <div>
+                        <span class="rewards-xp-number" id="reward-total-xp">
+                            0 XP
+                        </span>
+
+                        <span class="rewards-xp-label">
+                            Experiencia acumulada
+                        </span>
+                    </div>
+
+                    <div class="rewards-next">
+                        <strong id="reward-next-rank">
+                            Próximo rango: Explorador IA
+                        </strong>
+
+                        <span
+                            class="rewards-next-label"
+                            id="reward-xp-needed"
+                        >
+                            150 XP restantes
+                        </span>
+                    </div>
+
+                </div>
+
+                <div class="rewards-progress">
+                    <div
+                        class="rewards-progress-fill"
+                        id="reward-progress-fill"
+                    ></div>
+                </div>
+
+                <h4 class="rewards-badges-title">
+                    INSIGNIAS
+                </h4>
+
+                <div
+                    class="rewards-badges"
+                    id="rewards-badges"
+                ></div>
+
+                <div
+                    class="reward-notice"
+                    id="reward-notice"
+                    aria-live="polite"
+                ></div>
+
+            </section>
+
+            <!-- ENCABEZADO DEL JUEGO -->
+
+            <div class="game-topbar">
+
+                <div>
+                    <span class="section-kicker">
+                        MISIÓN EN CURSO
+                    </span>
+
+                    <h2 id="level-name">Básico</h2>
+                </div>
+
+                <div class="game-score">
+                    <span>PUNTUACIÓN</span>
+                    <strong id="score">000</strong>
+                </div>
+
+            </div>
+
+            <!-- BARRA DE PROGRESO -->
+
+            <div class="progress-area">
+
+                <div class="progress-info">
+                    <span id="progress-label">0/60</span>
+                    <span id="progress-percent">0%</span>
+                </div>
+
+                <div
+                    class="progress-track"
+                    id="progress-track"
+                    role="progressbar"
+                    aria-label="Progreso del juego"
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                    aria-valuenow="0"
+                >
+                    <div
+                        class="progress-fill"
+                        id="progress-fill"
+                    ></div>
+                </div>
+
+            </div>
+
+            <!-- ESTADÍSTICAS -->
+
+            <div class="game-status">
+
+                <div class="status-item">
+                    <span class="status-icon">♥</span>
+
+                    <div>
+                        <small>VIDAS</small>
+                        <strong id="lives">3</strong>
+                    </div>
+                </div>
+
+                <div class="status-item">
+                    <span class="status-icon">◆</span>
+
+                    <div>
+                        <small>EXPERIENCIA</small>
+                        <strong id="experience">0 XP</strong>
+                    </div>
+                </div>
+
+                <div class="status-item">
+                    <span class="status-icon">◈</span>
+
+                    <div>
+                        <small>MODALIDAD</small>
+                        <strong id="mode-label">TRIVIA</strong>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- CONTENEDOR DE DESAFÍOS -->
+
+            <div
+                class="challenge-container"
+                id="challenge-container"
+            >
+
+                <div class="challenge-heading">
+
+                    <div>
+                        <span
+                            class="challenge-type"
+                            id="challenge-category"
+                        >
+                            FUNDAMENTOS
+                        </span>
+
+                        <h2 id="challenge-title">
+                            Preparando desafío...
+                        </h2>
+                    </div>
+
+                    <span
+                        class="challenge-number"
+                        id="challenge-number"
+                    >
+                        RETO 1 DE 60
+                    </span>
+
+                </div>
+
+                <p
+                    class="challenge-description"
+                    id="challenge-description"
+                ></p>
+
+                <!-- ACTIVIDADES DINÁMICAS -->
+
+                <div id="challenge-content"></div>
+
+                <!-- RETROALIMENTACIÓN -->
+
+                <div
+                    class="feedback-message"
+                    id="feedback-message"
+                    aria-live="polite"
+                    aria-atomic="true"
+                ></div>
+
+                <!-- COMPROBAR RESPUESTA -->
+
+                <button
+                    class="primary-button answer-button"
+                    id="submit-answer"
+                    type="button"
+                    hidden
+                >
+                    COMPROBAR RESPUESTA
+                    <span>↗</span>
+                </button>
+
+                <!-- SIGUIENTE RETO -->
+
+                <button
+                    class="primary-button answer-button"
+                    id="next-challenge"
+                    type="button"
+                    hidden
+                >
+                    SIGUIENTE RETO
+                    <span>↗</span>
+                </button>
+
+            </div>
+
+            <!-- PIE DE INTERFAZ -->
+
+            <div class="game-bottom">
+                <span>IA CHALLENGE / SISTEMA EDUCATIVO</span>
+                <span>APRENDE · RESUELVE · SUPERA</span>
+            </div>
+
+        </section>
+
+        <!-- PANTALLA FINAL -->
+
+        <section
+            class="final-screen"
+            id="final-screen"
+            hidden
+        >
+
+            <div class="final-symbol">✦</div>
+
+            <span class="section-kicker">
+                MISIÓN FINALIZADA
+            </span>
+
+            <h1 id="final-title">
+                ¡Desafío completado!
+            </h1>
+
+            <p id="final-description"></p>
+
+            <!-- RESUMEN DE RECOMPENSAS -->
+
+            <div class="final-rewards" id="final-rewards">
+
+                <h3>🏆 RECOMPENSAS DE LA MISIÓN</h3>
+
+                <p id="final-rewards-description">
+                    Tus recompensas aparecerán aquí.
+                </p>
+
+            </div>
+
+            <!-- ESTADÍSTICAS FINALES -->
+
+            <div class="final-stats">
+
+                <div>
+                    <strong id="final-score">0</strong>
+                    <span>Puntos obtenidos</span>
+                </div>
+
+                <div>
+                    <strong id="final-correct">0/60</strong>
+                    <span>Respuestas correctas</span>
+                </div>
+
+                <div>
+                    <strong id="final-accuracy">0%</strong>
+                    <span>Precisión</span>
+                </div>
+
+            </div>
+
+            <!-- ACCIONES FINALES -->
+
+            <div class="final-actions">
+
+                <button
+                    class="primary-button"
+                    id="restart-game"
+                    type="button"
+                >
+                    VOLVER A JUGAR
+                    <span>↗</span>
+                </button>
+
+            </div>
+
+            <div class="game-credits">
+                <span>IA CHALLENGE</span>
+                <strong>Aprende · Piensa · Supera</strong>
+                <small>Proyecto académico de Inteligencia Artificial · 2026</small>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- PIE DE PÁGINA -->
+
+    <footer class="site-footer">
+
+        <a href="#game-intro" class="brand-logo">
+
+            <span class="brand-symbol">
+                <svg viewBox="0 0 50 50" fill="none" aria-hidden="true">
+                    <path d="M25 3L46 15V35L25 47L4 35V15L25 3Z"
+                        stroke="currentColor" stroke-width="2"/>
+                    <path d="M15 33L25 14L35 33M19 25H31"
+                        stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round"/>
+                    <circle cx="25" cy="37" r="2" fill="currentColor"/>
+                </svg>
+            </span>
+
+            <span class="brand-name">
+                IA <strong>CHALLENGE</strong>
+            </span>
+
+        </a>
+
+        <p>
+            APRENDE. PIENSA. DESAFÍA LOS LÍMITES DE LA IA.
+        </p>
+
+        <span class="footer-copyright">
+            © 2026 IA CHALLENGE · PROYECTO ACADÉMICO
+        </span>
+
+    </footer>
+
+    <!-- ARCHIVOS JAVASCRIPT: CONSERVAR EL ORDEN -->
+
+<script src="preguntas.js"></script>
+<script src="juego.js"></script>
+<script src="recompensas.js"></script>
+<script src="poderes.js"></script>
+
+</body>
+</html>

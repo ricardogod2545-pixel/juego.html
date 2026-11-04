@@ -1,0 +1,218 @@
+
+/* =====================================================
+   IA CHALLENGE — ESTILOS DE PODERES
+   ===================================================== */
+
+.powers-panel {
+    width: 100%;
+    margin: 22px auto;
+    padding: 22px;
+    border: 1px solid rgba(120, 100, 255, .35);
+    border-radius: 20px;
+    background: linear-gradient(145deg, rgba(20, 18, 48, .96), rgba(8, 12, 29, .96));
+    box-shadow: 0 0 28px rgba(100, 70, 255, .12);
+    animation: powersAppear .6s ease both;
+}
+
+.powers-heading {
+    margin-bottom: 18px;
+}
+
+.powers-eyebrow {
+    color: #8d9dff;
+    font-size: .7rem;
+    font-weight: 800;
+    letter-spacing: 3px;
+}
+
+.powers-heading h3 {
+    color: #fff;
+    margin: 7px 0;
+    font-size: 1.35rem;
+}
+
+.powers-heading p {
+    color: #a8accb;
+    margin: 0;
+    font-size: .85rem;
+}
+
+.powers-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.power-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    min-height: 145px;
+    padding: 15px;
+    overflow: hidden;
+    text-align: left;
+    border: 1px solid rgba(145, 130, 255, .28);
+    border-radius: 15px;
+    color: white;
+    background: rgba(60, 54, 112, .2);
+    cursor: pointer;
+    transition: transform .25s, border-color .25s, box-shadow .25s;
+}
+
+.power-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    background: linear-gradient(120deg, transparent, rgba(150, 140, 255, .15), transparent);
+    transform: translateX(-100%);
+    transition: .5s;
+}
+
+.power-card:hover:not(:disabled) {
+    transform: translateY(-5px);
+    border-color: #a99aff;
+    box-shadow: 0 0 22px rgba(140, 110, 255, .28);
+}
+
+.power-card:hover::before {
+    opacity: 1;
+    transform: translateX(100%);
+}
+
+.power-icon {
+    font-size: 1.7rem;
+    filter: drop-shadow(0 0 9px rgba(160, 140, 255, .5));
+}
+
+.power-name {
+    font-weight: 800;
+    font-size: .95rem;
+}
+
+.power-description {
+    color: #b8bad2;
+    font-size: .72rem;
+    line-height: 1.4;
+}
+
+.power-count {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: grid;
+    place-items: center;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    color: white;
+    font-size: .75rem;
+    font-weight: 900;
+    background: #7059ed;
+}
+
+.power-disabled {
+    opacity: .35;
+    filter: grayscale(.8);
+    cursor: not-allowed;
+}
+
+.power-notice,
+.power-event {
+    margin-top: 13px;
+    padding: 11px 14px;
+    border-radius: 10px;
+    color: #d7d9ff;
+    font-size: .82rem;
+    background: rgba(90, 80, 170, .15);
+    border: 1px solid rgba(130, 120, 255, .2);
+}
+
+.power-notice.success {
+    color: #8affc6;
+    border-color: rgba(80, 255, 170, .35);
+    background: rgba(20, 160, 100, .12);
+}
+
+.power-notice.warning,
+.power-event {
+    color: #ffbd86;
+    border-color: rgba(255, 130, 70, .35);
+    background: rgba(180, 70, 30, .13);
+}
+
+.power-pop {
+    animation: powerPop .35s ease;
+}
+
+.event-show {
+    animation: eventShow .5s ease;
+}
+
+.power-effect .power-card:not(:disabled) {
+    animation: powerPulse .6s ease;
+}
+
+.neural-interference #game-interface {
+    animation: neuralGlitch .13s linear 5;
+}
+
+.shield-effect #game-interface {
+    box-shadow: 0 0 30px rgba(60, 210, 255, .55);
+}
+
+@keyframes powersAppear {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes powerPop {
+    0% { transform: scale(.97); }
+    60% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+}
+
+@keyframes eventShow {
+    from { opacity: 0; transform: translateX(15px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes powerPulse {
+    50% { box-shadow: 0 0 22px rgba(150, 120, 255, .55); }
+}
+
+@keyframes neuralGlitch {
+    0% { transform: translateX(-2px); filter: hue-rotate(20deg); }
+    50% { transform: translateX(2px); filter: hue-rotate(-20deg); }
+    100% { transform: translateX(0); }
+}
+
+@media (max-width: 750px) {
+    .powers-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 380px) {
+    .powers-panel {
+        padding: 14px;
+    }
+
+    .power-card {
+        min-height: 130px;
+        padding: 11px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .powers-panel,
+    .power-card,
+    .power-notice,
+    .power-event,
+    #game-interface {
+        animation: none !important;
+        transition: none !important;
+    }
+}
